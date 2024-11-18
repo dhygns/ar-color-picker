@@ -32,18 +32,47 @@ export default class ArColorTest {
 
         // 5. 비디오 텍스처를 배경으로 설정
         this.scene.background = videoTexture;
+    
+        // 7. ShaderMaterial 생성
+        const shaderMaterial = new THREE.ShaderMaterial({
+            vertexShader: `
+                varying vec3 vPosition;
+                void main() {
+                    vPosition = position;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 uColor;
+                varying vec3 vPosition;
+                void main() {
+                    gl_FragColor = vec4(uColor, (uColor.r + uColor.g + uColor.b) / 3.0);
+                }
+            `,
+            transparent: true,
+            uniforms: {
+                uColor: { value: new THREE.Color(0xff0000) }
+            }
+        });
 
-        // 6. GLTFLoader를 사용하여 GLB 파일 로드
+        // 8. GLTFLoader를 사용하여 GLB 파일 로드
         const loader = new GLTFLoader();
         loader.load('public/models/arrow.glb', (gltf: any) => {
             this.model = gltf.scene;
 
             if (this.model) {
+
+                // 모델의 모든 Mesh에 ShaderMaterial 적용
+                this.model.traverse((child) => {
+                    if ((child as THREE.Mesh).isMesh) {
+                        (child as THREE.Mesh).material = shaderMaterial;
+                    }
+                });
+
                 this.scene.add(this.model);
-                this.model.position.y = -1.5;
-                this.model.scale.x = 0.4;
-                this.model.scale.y = 0.4;
-                this.model.scale.z = 0.4;
+                this.model.scale.x = 0.01;
+                this.model.scale.y = 0.01;
+                this.model.scale.z = 0.001;
             }
             else {
                 console.error('Model not found');
@@ -74,8 +103,8 @@ export default class ArColorTest {
 
         // 마우스 위치에 따라 모델 회전
         if (this.model) {
-            this.model.rotation.y = this.mouseX * 0.5; // 마우스 X 위치에 따라 Y축 회전
-            this.model.rotation.x = this.mouseY * 0.5; // 마우스 Y 위치에 따라 X축 회전
+            this.model.rotation.y = this.mouseX * 0.2; // 마우스 X 위치에 따라 Y축 회전
+            this.model.rotation.x = this.mouseY * 0.2; // 마우스 Y 위치에 따라 X축 회전
         }
         // 장면 렌더링
         this.renderer.render(this.scene, this.camera);
@@ -87,7 +116,7 @@ export default class ArColorTest {
         if (this.model) {
             this.model.traverse((child) => {
                 if ((child as THREE.Mesh).isMesh) {
-                    ((child as THREE.Mesh).material as THREE.MeshStandardMaterial).color.set(color);
+                    ((child as THREE.Mesh).material as THREE.ShaderMaterial).uniforms.uColor.value = new THREE.Color(color);
                 }
             });
         }
