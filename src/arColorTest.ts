@@ -1,21 +1,24 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export default class ArColorTest {
     private scene: THREE.Scene;
     private camera: THREE.PerspectiveCamera;
     private renderer: THREE.WebGLRenderer;
-    private cube: THREE.Mesh;
+    private model: THREE.Group | null = null;
+    private mouseX: number = 0;
+    private mouseY: number = 0;
 
     constructor(canvas: HTMLCanvasElement, video: HTMLVideoElement) {
         console.log('ArColorTest');
-    
+
         // 1. 장면 생성
         this.scene = new THREE.Scene();
-    
+
         // 2. 카메라 생성
         this.camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
         this.camera.position.z = 5;
-    
+
         // 3. 렌더러 생성
         this.renderer = new THREE.WebGLRenderer({ canvas });
         this.renderer.setSize(canvas.width, canvas.height);
@@ -29,32 +32,64 @@ export default class ArColorTest {
 
         // 5. 비디오 텍스처를 배경으로 설정
         this.scene.background = videoTexture;
-    
-        // 6. 기본적인 3D 객체 추가 (큐브)
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        this.cube = new THREE.Mesh(geometry, material);
-        this.scene.add(this.cube);
-    
-        // 7. 애니메이션 루프 설정
+
+        // 6. GLTFLoader를 사용하여 GLB 파일 로드
+        const loader = new GLTFLoader();
+        loader.load('public/models/arrow.glb', (gltf: any) => {
+            this.model = gltf.scene;
+
+            if (this.model) {
+                this.scene.add(this.model);
+                this.model.position.y = -1.5;
+                this.model.scale.x = 0.4;
+                this.model.scale.y = 0.4;
+                this.model.scale.z = 0.4;
+            }
+            else {
+                console.error('Model not found');
+            }
+
+        }, undefined, (error: unknown) => {
+            console.error('An error happened', error);
+        });
+
+        // 7. 마우스 움직임 이벤트 리스너 추가
+        window.addEventListener('mousemove', this.onMouseMove.bind(this), false);
+
+        // 8. 애니메이션 루프 설정
         this.animate();
     }
 
-    // 8. 애니메이션 루프
+    // 9. 마우스 움직임 이벤트 핸들러
+    private onMouseMove(event: MouseEvent): void {
+
+        // 마우스 좌표를 정규화된 장치 좌표로 변환
+        this.mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+    }
+
+    // 10. 애니메이션 루프
     private animate(): void {
-      requestAnimationFrame(() => this.animate());
-  
-      // 큐브 회전
-      this.cube.rotation.x += 0.01;
-      this.cube.rotation.y += 0.01;
-  
-      // 장면 렌더링
-      this.renderer.render(this.scene, this.camera);
+        requestAnimationFrame(() => this.animate());
+
+        // 마우스 위치에 따라 모델 회전
+        if (this.model) {
+            this.model.rotation.y = this.mouseX * 0.5; // 마우스 X 위치에 따라 Y축 회전
+            this.model.rotation.x = this.mouseY * 0.5; // 마우스 Y 위치에 따라 X축 회전
+        }
+        // 장면 렌더링
+        this.renderer.render(this.scene, this.camera);
     }
 
     public updateModelColor(color: string): void {
         console.log(color);
         // 모델의 색상을 업데이트하는 로직을 여기에 작성할 수 있습니다.
-        (this.cube.material as THREE.MeshBasicMaterial).color.set(color);
+        if (this.model) {
+            this.model.traverse((child) => {
+                if ((child as THREE.Mesh).isMesh) {
+                    ((child as THREE.Mesh).material as THREE.MeshStandardMaterial).color.set(color);
+                }
+            });
+        }
     }
 }
