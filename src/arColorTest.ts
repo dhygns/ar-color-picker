@@ -6,7 +6,7 @@ export default class ArColorTest {
     private renderer: THREE.WebGLRenderer;
     private cube: THREE.Mesh;
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement, video: HTMLVideoElement) {
         console.log('ArColorTest');
     
         // 1. 장면 생성
@@ -20,18 +20,27 @@ export default class ArColorTest {
         this.renderer = new THREE.WebGLRenderer({ canvas });
         this.renderer.setSize(canvas.width, canvas.height);
         document.body.appendChild(this.renderer.domElement);
+
+        // 4. 비디오 텍스처 생성
+        const videoTexture = new THREE.VideoTexture(video);
+        videoTexture.minFilter = THREE.LinearFilter;
+        videoTexture.magFilter = THREE.LinearFilter;
+        videoTexture.format = THREE.RGBFormat;
+
+        // 5. 비디오 텍스처를 배경으로 설정
+        this.scene.background = videoTexture;
     
-        // 4. 기본적인 3D 객체 추가 (큐브)
+        // 6. 기본적인 3D 객체 추가 (큐브)
         const geometry = new THREE.BoxGeometry();
         const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         this.cube = new THREE.Mesh(geometry, material);
         this.scene.add(this.cube);
     
-        // 5. 애니메이션 루프 설정
+        // 7. 애니메이션 루프 설정
         this.animate();
     }
 
-    // 6. 애니메이션 루프
+    // 8. 애니메이션 루프
     private animate(): void {
       requestAnimationFrame(() => this.animate());
   
