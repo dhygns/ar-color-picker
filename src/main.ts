@@ -13,7 +13,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </p>
 </div>
 <canvas id="modelCanvas" width="400" height="400"></canvas>
-<video id="backgroundVideo" src="public/videos/background.mp4" loop muted playsinline style="display: none;"></video>
+<video id="backgroundVideo" src="videos/background.mp4" loop muted playsinline style="display: none;"></video>
 `
 
 const arColorPicker = new ARColorPicker(

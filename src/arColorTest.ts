@@ -57,7 +57,7 @@ export default class ArColorTest {
 
         // 8. GLTFLoader를 사용하여 GLB 파일 로드
         const loader = new GLTFLoader();
-        loader.load('public/models/arrow.glb', (gltf: any) => {
+        loader.load('models/arrow.glb', (gltf: any) => {
             this.model = gltf.scene;
 
             if (this.model) {
