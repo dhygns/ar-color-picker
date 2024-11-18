@@ -26,7 +26,7 @@ export default class ARColorPicker {
     this.height = (canvas as HTMLCanvasElement).height;
   }
 
-  run(): void {
+  run(callback: (input: string) => void): void {
     const imageData = this.ctx.createImageData(this.width, this.height);
     let index = 0;
 
@@ -76,6 +76,7 @@ export default class ARColorPicker {
         if (this.selectedColorText) {
           this.selectedColorText.textContent = hexColor.toUpperCase(); // 텍스트로 색상 표시
         }
+        callback(hexColor.toUpperCase());
       } else {
         if (this.colorBox) {
           this.colorBox.style.backgroundColor = 'transparent';
