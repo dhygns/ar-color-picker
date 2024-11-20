@@ -47,9 +47,10 @@ export default class ArColorTest {
                 varying vec3 vPosition;
                 void main() {
                     float r = uColor.r;
-                    float g = uColor.g;
-                    float b = uColor.b;
-                    float a = max(g * 0.6, max(r, b * 0.3));
+                    float g = uColor.g * 0.4;
+                    float b = uColor.b * 0.1;
+
+                    float a = r + g + b;
                     gl_FragColor = vec4(uColor, min(a, 1.0));
                 }
             `,
