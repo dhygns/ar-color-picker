@@ -49,7 +49,7 @@ export default class ArColorTest {
                     float r = uColor.r;
                     float g = uColor.g;
                     float b = uColor.b;
-                    float a = max(g, max(r * 0.6, b * 0.3));
+                    float a = max(g * 0.6, max(r, b * 0.3));
                     gl_FragColor = vec4(uColor, min(a, 1.0));
                 }
             `,
