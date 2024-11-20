@@ -12,7 +12,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <span id="selectedColor" style="color: white; margin-left: 10px;">None</span>
   </p>
 </div>
-<canvas id="modelCanvas" width="400" height="400"></canvas>
+<canvas id="modelCanvas" width="933" height="400"></canvas>
 <video id="backgroundVideo" src="videos/background.mp4" loop muted playsinline style="display: none;"></video>
 `
 

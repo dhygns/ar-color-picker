@@ -26,9 +26,9 @@ export default class ArColorTest {
 
         // 4. 비디오 텍스처 생성
         const videoTexture = new THREE.VideoTexture(video);
-        videoTexture.minFilter = THREE.LinearFilter;
-        videoTexture.magFilter = THREE.LinearFilter;
-        videoTexture.format = THREE.RGBFormat;
+        videoTexture.minFilter = THREE.NearestFilter;
+        videoTexture.magFilter = THREE.NearestFilter;
+        videoTexture.format = THREE.RGBAFormat;
 
         // 5. 비디오 텍스처를 배경으로 설정
         this.scene.background = videoTexture;
@@ -46,7 +46,11 @@ export default class ArColorTest {
                 uniform vec3 uColor;
                 varying vec3 vPosition;
                 void main() {
-                    gl_FragColor = vec4(uColor, (uColor.r + uColor.g + uColor.b) / 3.0);
+                    float r = uColor.r;
+                    float g = uColor.g;
+                    float b = uColor.b;
+                    float a = max(g, max(r * 0.6, b * 0.3));
+                    gl_FragColor = vec4(uColor, min(a, 1.0));
                 }
             `,
             transparent: true,
@@ -70,8 +74,8 @@ export default class ArColorTest {
                 });
 
                 this.scene.add(this.model);
-                this.model.scale.x = 0.01;
-                this.model.scale.y = 0.01;
+                this.model.scale.x = 0.03;
+                this.model.scale.y = 0.03;
                 this.model.scale.z = 0.001;
             }
             else {
