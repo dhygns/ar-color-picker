@@ -75,8 +75,8 @@ export default class ArColorTest {
                 });
 
                 this.scene.add(this.model);
-                this.model.scale.x = 0.03;
-                this.model.scale.y = 0.03;
+                this.model.scale.x = 0.02;
+                this.model.scale.y = 0.015;
                 this.model.scale.z = 0.001;
             }
             else {
